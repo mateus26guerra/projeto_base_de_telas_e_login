@@ -1,8 +1,8 @@
 package projeto_base_de_telas_e_login.domain.product;
 
-public record ProductRequestDTO(String name, Double price) {
+public record ProductRequestDTO(String name, Double price, String imagemUrl) {
 
     public ProductRequestDTO(Product product) {
-        this(product.getName(), product.getPrice());
+        this(product.getName(), product.getPrice(),product.getImagemUrl());
     }
 }
