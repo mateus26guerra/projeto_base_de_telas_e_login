@@ -20,6 +20,7 @@ public class Product {
         this.name = dto.name();
         this.price = dto.price();
         this.imagemUrl = dto.imagemUrl();
+        this.id = dto.id();
     }
 
     public String getImagemUrl() {
