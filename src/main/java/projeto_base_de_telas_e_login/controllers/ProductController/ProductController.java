@@ -11,19 +11,31 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("products")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN','USER')")
 public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
 
+    // 🚀 Permitir USER e ADMIN
     @PostMapping("/add_products")
     public ResponseEntity<Void> createProduct(@RequestBody @Valid ProductRequestDTO body) {
         Product newProduct = new Product(body);
         this.productRepository.save(newProduct);
         return ResponseEntity.ok().build();
+    }
+
+    // Somente ADMIN pode deletar produtos (opcional)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        if (!productRepository.existsById(Math.toIntExact(id))) {
+            return ResponseEntity.notFound().build();
+        }
+        productRepository.deleteById(Math.toIntExact(id));
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("")
@@ -34,17 +46,4 @@ public class ProductController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(productList);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-
-        if (!productRepository.existsById(Math.toIntExact(id))) {
-            return ResponseEntity.notFound().build();
-        }
-
-        productRepository.deleteById(Math.toIntExact(id));
-        return ResponseEntity.noContent().build(); // 204
-    }
-
 }
-

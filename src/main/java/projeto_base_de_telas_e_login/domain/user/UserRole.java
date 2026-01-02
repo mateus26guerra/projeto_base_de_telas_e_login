@@ -1,9 +1,8 @@
 package projeto_base_de_telas_e_login.domain.user;
 
 public enum UserRole {
-
-    ADMIN("admin"),
-    USER("user");
+    ADMIN("ROLE_ADMIN"),
+    USER("ROLE_USER");
 
     private String role;
 

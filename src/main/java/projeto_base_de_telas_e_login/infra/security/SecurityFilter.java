@@ -32,7 +32,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // ✅ IGNORA ROTAS PÚBLICAS
         if (path.startsWith("/productsPublico")) {
             filterChain.doFilter(request, response);
             return;
