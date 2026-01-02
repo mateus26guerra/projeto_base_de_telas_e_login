@@ -1,4 +1,4 @@
-package projeto_base_de_telas_e_login.controllers.AuthenticationController;
+package projeto_base_de_telas_e_login.controllers.AuthenticationController.AuthenticationPublicaController;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
