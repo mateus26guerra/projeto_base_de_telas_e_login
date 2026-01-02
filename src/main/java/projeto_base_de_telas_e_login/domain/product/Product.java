@@ -1,9 +1,6 @@
 package projeto_base_de_telas_e_login.domain.product;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Product {
@@ -14,12 +11,24 @@ public class Product {
 
     private String name;
     private Double price;
+    @Column(name = "image_url")
+    private String imagemUrl;
 
     public Product() {}
 
     public Product(ProductRequestDTO dto) {
         this.name = dto.name();
         this.price = dto.price();
+        this.imagemUrl = dto.imagemUrl();
+        this.id = dto.id();
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 
     public int getId() {

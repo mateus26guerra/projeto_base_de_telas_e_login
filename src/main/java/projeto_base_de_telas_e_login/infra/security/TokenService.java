@@ -23,8 +23,10 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getLogin())
+                    .withClaim("role", user.getRole().name()) // 👈 AQUI É A CHAVE
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
+
         } catch (JWTCreationException e) {
             throw new RuntimeException("Error while generating token", e);
         }

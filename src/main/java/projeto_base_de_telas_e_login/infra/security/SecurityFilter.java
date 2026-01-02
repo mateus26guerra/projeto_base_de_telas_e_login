@@ -30,17 +30,33 @@ public class SecurityFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/productsPublico")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         var token = recoverToken(request);
 
         if (token != null) {
-            var login = tokenService.validateToken(token);
-            if (login != null) {
-                UserDetails user = userRepository.findByUsername(login).orElse(null);
+            try {
+                var login = tokenService.validateToken(token);
+                if (login != null) {
+                    UserDetails user = userRepository.findByUsername(login).orElse(null);
 
-                if (user != null) {
-                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if (user != null) {
+                        var authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        user, null, user.getAuthorities());
+
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(authentication);
+                    }
                 }
+            } catch (Exception e) {
+                // token inválido ou expirado → ignora
+                SecurityContextHolder.clearContext();
             }
         }
 
