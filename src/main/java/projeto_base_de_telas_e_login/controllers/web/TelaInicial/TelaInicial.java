@@ -1,4 +1,4 @@
-package projeto_base_de_telas_e_login.controllers.ProductController;
+package projeto_base_de_telas_e_login.controllers.web.TelaInicial;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("productsPublico")
-public class ProductPublicoController {
-
-
+public class TelaInicial {
     @Autowired
     private ProductRepository productRepository;
 

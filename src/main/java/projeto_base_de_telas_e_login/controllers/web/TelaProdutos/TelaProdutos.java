@@ -1,5 +1,6 @@
-package projeto_base_de_telas_e_login.controllers.ProductController;
+package projeto_base_de_telas_e_login.controllers.web.TelaProdutos;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import projeto_base_de_telas_e_login.domain.product.Product;
 import projeto_base_de_telas_e_login.domain.product.ProductRequestDTO;
 import projeto_base_de_telas_e_login.repositores.ProductRepository;
-import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("products")
 @PreAuthorize("hasAnyRole('ADMIN','USER')")
-public class ProductPrivateController {
+public class TelaProdutos {
 
     @Autowired
     private ProductRepository productRepository;
