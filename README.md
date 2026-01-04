@@ -30,8 +30,9 @@ Ele demonstra um sistema completo de **autenticação e autorização** com **tr
 
 ---
 
-video do Projeto 
-[video](https://youtu.be/QNbRW_KyXCE)
+video do Projeto -> https://youtu.be/QNbRW_KyXCE
+
+link do front -> https://github.com/mateus26guerra/front-projeto_base_de_telas_e_login
 ## Tecnologias Usadas
 
 
