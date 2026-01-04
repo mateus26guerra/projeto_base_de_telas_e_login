@@ -1,32 +1,35 @@
 package projeto_base_de_telas_e_login.domain.model.user;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "users")
-public class User implements UserDetails {
-
-    @Id
-    @GeneratedValue
+public class User {
     private UUID id;
 
-    @Column(unique = true)
     private String username;
 
     private String password;
 
-    @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    private String email;   // 👈 OBRIGATÓRIO
+    private String email;
+
+
+    public User(UUID id, String username, String password, UserRole role, String email) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getEmail() {
         return email;
@@ -34,42 +37,6 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public User() {}
-
-    public User(String login, String password, UserRole role) {
-        this.username = login;
-        this.password = password;
-        this.role = role;
-    }
-
-    // ===== GETTERS / SETTERS =====
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getLogin() {
-        return username;
-    }
-
-    public void setLogin(@NotBlank String login) {
-        this.username = login;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public UserRole getRole() {
@@ -80,18 +47,19 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    // ===== SPRING SECURITY =====
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role == UserRole.ADMIN) {
-            return List.of(new SimpleGrantedAuthority(role.getRole()));
-        }
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    public String getPassword() {
+        return password;
     }
 
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

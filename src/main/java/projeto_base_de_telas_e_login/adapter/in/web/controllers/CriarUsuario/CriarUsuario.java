@@ -4,96 +4,83 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import projeto_base_de_telas_e_login.domain.model.user.DTO.LoginResponseDTO;
-import projeto_base_de_telas_e_login.domain.model.user.DTO.RegisterDTO;
-import projeto_base_de_telas_e_login.domain.model.user.User;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.User.LoginResponseDTO;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.User.RegisterDTO;
+import projeto_base_de_telas_e_login.adapter.out.persistence.User.UserEntity;
+import projeto_base_de_telas_e_login.domain.UseCase.User.UserUseCase;
 import projeto_base_de_telas_e_login.domain.model.user.UserRole;
 import projeto_base_de_telas_e_login.tudo.security.TokenService;
-import projeto_base_de_telas_e_login.tudo.repositores.UserRepository;
+import projeto_base_de_telas_e_login.adapter.out.persistence.User.UserRepository;
 
-import projeto_base_de_telas_e_login.domain.model.user.DTO.UpdateUserDTO;
-import projeto_base_de_telas_e_login.domain.model.user.DTO.UserResponseDTO;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.User.UpdateUserDTO;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.User.UserResponseDTO;
 import java.util.List;
 import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/auth")
 public class CriarUsuario {
 
+    private final UserUseCase userUseCase;
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserRepository userRepository;
+    public CriarUsuario(UserUseCase userUseCase, TokenService tokenService) {
+        this.userUseCase = userUseCase;
+        this.tokenService = tokenService;
+    }
 
-    @Autowired
-    private TokenService tokenService;
+    // 🔐 REGISTRO
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponseDTO> register(
+            @RequestBody @Valid RegisterDTO dto
+    ) {
+        var user = userUseCase.createUser(
+                dto.login(),
+                dto.password(),
+                dto.role()
+        );
 
+        var token = tokenService.generateToken(user);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        return ResponseEntity.ok(new LoginResponseDTO(token));
+    }
 
+    // 🔐 LISTAR USUÁRIOS (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserResponseDTO>> listarUsuarios() {
 
-        var users = userRepository.findAll()
+        var users = userUseCase.findAll()
                 .stream()
                 .map(user -> new UserResponseDTO(
                         user.getId(),
-                        user.getLogin(),
+                        user.getUsername(),
                         user.getRole().name()
                 ))
                 .toList();
 
         return ResponseEntity.ok(users);
     }
+
+
+    // 🔐 ATUALIZAR USUÁRIO (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/users/{id}")
-    public ResponseEntity<?> atualizarUsuario(
+    public ResponseEntity<Void> atualizarUsuario(
             @PathVariable UUID id,
-            @RequestBody @Valid UpdateUserDTO data
+            @RequestBody @Valid UpdateUserDTO dto
     ) {
-
-        var user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        user.setLogin(data.login());
-
-        if (data.password() != null && !data.password().isBlank()) {
-            user.setPassword(passwordEncoder.encode(data.password()));
-        }
-
-        if (data.role() != null) {
-            user.setRole(UserRole.valueOf(data.role()));
-        }
-
-        userRepository.save(user);
-        return ResponseEntity.ok().build();
-    }
-
-
-    @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @RequestBody @Valid RegisterDTO data) {
-
-        if (userRepository.findByUsername(data.login()).isPresent()) {
-            return ResponseEntity.badRequest().body("Usuário já existe");
-        }
-
-        String encryptedPassword = passwordEncoder.encode(data.password());
-
-        User newUser = new User(
-                data.login(),
-                encryptedPassword,
-                data.role()
+        userUseCase.updateUser(
+                id,
+                dto.login(),
+                dto.password(),
+                dto.role()
         );
 
-        userRepository.save(newUser);
-
-        var token = tokenService.generateToken(newUser);
-
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        return ResponseEntity.ok().build();
     }
 }

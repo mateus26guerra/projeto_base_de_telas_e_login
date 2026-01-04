@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true) // 🔥 ISSO É O PONTO-CHAVE
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
@@ -38,6 +38,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/products/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("ADMIN") // ← novo
                         .anyRequest().authenticated()
                 )
 

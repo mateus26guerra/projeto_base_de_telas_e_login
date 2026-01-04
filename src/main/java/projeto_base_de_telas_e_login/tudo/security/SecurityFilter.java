@@ -10,9 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import projeto_base_de_telas_e_login.tudo.repositores.UserRepository;
-
-
+import projeto_base_de_telas_e_login.adapter.out.persistence.User.UserRepository;
 import java.io.IOException;
 
 @Component
@@ -25,13 +23,19 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/productsPublico")) {
+        if (
+                path.equals("/auth/login") ||
+                        path.equals("/auth/register") ||
+                        path.startsWith("/productsPublico")
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,19 +46,24 @@ public class SecurityFilter extends OncePerRequestFilter {
             try {
                 var login = tokenService.validateToken(token);
                 if (login != null) {
-                    UserDetails user = userRepository.findByUsername(login).orElse(null);
+                    UserDetails user = userRepository
+                            .findByUsername(login)
+                            .orElse(null);
+
 
                     if (user != null) {
                         var authentication =
                                 new UsernamePasswordAuthenticationToken(
-                                        user, null, user.getAuthorities());
+                                        user,
+                                        null,
+                                        user.getAuthorities()
+                                );
 
                         SecurityContextHolder.getContext()
                                 .setAuthentication(authentication);
                     }
                 }
             } catch (Exception e) {
-                // token inválido ou expirado → ignora
                 SecurityContextHolder.clearContext();
             }
         }
@@ -64,7 +73,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request) {
         var authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) return null;
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return null;
+        }
         return authorizationHeader.replace("Bearer ", "").trim();
     }
+
 }

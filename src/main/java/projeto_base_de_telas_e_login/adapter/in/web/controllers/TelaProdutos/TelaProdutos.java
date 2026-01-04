@@ -1,10 +1,16 @@
 package projeto_base_de_telas_e_login.adapter.in.web.controllers.TelaProdutos;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.Product.ProductDeletarDto;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.Product.ProductListaDto;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.Product.ProductResponseDTO;
+import projeto_base_de_telas_e_login.adapter.in.web.dto.Product.ProductoAddDto;
 import projeto_base_de_telas_e_login.domain.UseCase.Produto.ProdutoUseCase;
 import projeto_base_de_telas_e_login.domain.model.product.Product;
 
@@ -20,9 +26,9 @@ public class TelaProdutos {
     private ProdutoUseCase produtoUseCase;
 
     @PostMapping("/add_products")
-    public ResponseEntity<Void> createProduct(@RequestBody Product product) {
-        produtoUseCase.save(product);
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<Void> createProduct(@RequestBody ProductoAddDto product) {
+        produtoUseCase.save(product.toDomain());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")
@@ -32,8 +38,16 @@ public class TelaProdutos {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(produtoUseCase.findAll());
+
+    @Operation(summary = "Lista todos os produtos públicos")
+    @GetMapping("/list")
+    public ResponseEntity<List<ProductListaDto>> getAllProducts() {
+
+        var products = produtoUseCase.findAll();
+        var productDtos = products.stream()
+                .map(ProductListaDto::fromDomain)
+                .toList();
+
+        return ResponseEntity.ok(productDtos);
     }
 }

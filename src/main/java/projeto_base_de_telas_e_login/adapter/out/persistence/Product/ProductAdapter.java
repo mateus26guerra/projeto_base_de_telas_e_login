@@ -1,4 +1,4 @@
-package projeto_base_de_telas_e_login.adapter.out.persistence.ProdutoEntitity;
+package projeto_base_de_telas_e_login.adapter.out.persistence.Product;
 
 import org.springframework.stereotype.Component;
 import projeto_base_de_telas_e_login.domain.model.product.Product;
