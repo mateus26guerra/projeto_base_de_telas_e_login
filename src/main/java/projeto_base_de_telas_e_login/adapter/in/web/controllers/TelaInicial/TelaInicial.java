@@ -5,31 +5,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import projeto_base_de_telas_e_login.domain.model.product.DTO.ProductRequestDTO;
+import projeto_base_de_telas_e_login.domain.UseCase.Produto.ProdutoUseCase;
+import projeto_base_de_telas_e_login.domain.model.product.Product;
 import projeto_base_de_telas_e_login.tudo.repositores.ProductRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("productsPublico")
+@RequestMapping("/productsPublico")
 public class TelaInicial {
+
+
     @Autowired
-    private ProductRepository productRepository;
-
-
+    private ProdutoUseCase usercaseProduto;
 
     @GetMapping("/testeDeApiAberta")
-    public String Teste(){
-        return  "esse  Get esta aberto ao publico";
+    public String teste() {
+        return "esse Get está aberto ao público";
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<ProductRequestDTO>> getAllProducts() {
-        List<ProductRequestDTO> productList = productRepository.findAll()
-                .stream()
-                .map(ProductRequestDTO::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(productList);
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok( usercaseProduto.findAll());
     }
 }

@@ -24,14 +24,7 @@ public class TelaLogin {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private TokenService tokenService;
-
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
 
     @PostMapping("/login")

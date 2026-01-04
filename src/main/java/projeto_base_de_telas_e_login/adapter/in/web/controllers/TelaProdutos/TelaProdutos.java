@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import projeto_base_de_telas_e_login.domain.UseCase.Produto.ProdutoUseCase;
 import projeto_base_de_telas_e_login.domain.model.product.Product;
 import projeto_base_de_telas_e_login.domain.model.product.DTO.ProductRequestDTO;
 import projeto_base_de_telas_e_login.tudo.repositores.ProductRepository;
@@ -18,32 +19,23 @@ import java.util.stream.Collectors;
 public class TelaProdutos {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProdutoUseCase produtoUseCase;
 
-    // 🚀 Permitir USER e ADMIN
     @PostMapping("/add_products")
-    public ResponseEntity<Void> createProduct(@RequestBody @Valid ProductRequestDTO body) {
-        Product newProduct = new Product(body);
-        this.productRepository.save(newProduct);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> createProduct(@RequestBody Product product) {
+        produtoUseCase.save(product);
+        return ResponseEntity.status(201).build();
     }
 
-    // Somente ADMIN pode deletar produtos (opcional)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        if (!productRepository.existsById(Math.toIntExact(id))) {
-            return ResponseEntity.notFound().build();
-        }
-        productRepository.deleteById(Math.toIntExact(id));
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
+        produtoUseCase.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<ProductRequestDTO>> getAllProducts() {
-        List<ProductRequestDTO> productList = productRepository.findAll()
-                .stream()
-                .map(ProductRequestDTO::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(productList);
+    @GetMapping
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(produtoUseCase.findAll());
     }
 }

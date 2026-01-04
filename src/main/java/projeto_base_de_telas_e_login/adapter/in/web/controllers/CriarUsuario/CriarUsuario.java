@@ -23,8 +23,6 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class CriarUsuario {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     private UserRepository userRepository;
