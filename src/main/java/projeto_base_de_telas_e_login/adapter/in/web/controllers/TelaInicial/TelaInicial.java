@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import projeto_base_de_telas_e_login.domain.UseCase.Produto.ProdutoUseCase;
 import projeto_base_de_telas_e_login.domain.model.product.Product;
-import projeto_base_de_telas_e_login.tudo.repositores.ProductRepository;
 
 import java.util.List;
 

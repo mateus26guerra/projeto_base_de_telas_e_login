@@ -7,8 +7,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import projeto_base_de_telas_e_login.domain.UseCase.Produto.ProdutoUseCase;
 import projeto_base_de_telas_e_login.domain.model.product.Product;
-import projeto_base_de_telas_e_login.domain.model.product.DTO.ProductRequestDTO;
-import projeto_base_de_telas_e_login.tudo.repositores.ProductRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
